@@ -1,0 +1,37 @@
+services:
+  web:
+    build: ./app
+    image: two-tier-web:latest
+    container_name: web
+    ports:
+      - "80:5000"
+    environment:
+      DB_HOST: db
+      DB_NAME: appdb
+      DB_USER: appuser
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+      APP_VERSION: ${BUILD_NUMBER:-local}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: db
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    # No ports published: only the web container can reach the database.
+
+volumes:
+  db_data:

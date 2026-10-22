@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Two-Tier Task Tracker</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#eef2f5;margin:0;color:#1b1f2b}
+    .wrap{max-width:640px;margin:40px auto;padding:0 16px}
+    .card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    h1{margin:0 0 4px;color:#335061}
+    .meta{font-size:13px;color:#6b7a8f;margin-bottom:20px}
+    form.add{display:flex;gap:8px;margin-bottom:20px}
+    input[type=text]{flex:1;padding:10px;border:1px solid #ccd3da;border-radius:8px;font-size:15px}
+    button{background:#d33833;color:#fff;border:0;border-radius:8px;padding:10px 16px;font-size:15px;cursor:pointer}
+    ul{list-style:none;padding:0;margin:0}
+    li{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eef2f5}
+    li button{background:#6b7a8f;padding:6px 10px;font-size:13px}
+    .empty{color:#6b7a8f}
+  </style>
+</head>
+<body>
+  <div class="wrap"><div class="card">
+    <h1>Task Tracker</h1>
+    <div class="meta">Web tier: Flask + Gunicorn &middot; Data tier: PostgreSQL &middot; Build #{{ version }} &middot; Container {{ host }}</div>
+    <form class="add" method="post" action="/add">
+      <input type="text" name="title" placeholder="Add a task" maxlength="200" required>
+      <button type="submit">Add</button>
+    </form>
+    {% if tasks %}
+    <ul>
+      {% for id, title in tasks %}
+      <li><span>{{ title }}</span>
+        <form method="post" action="/delete/{{ id }}"><button type="submit">Delete</button></form></li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="empty">No tasks yet. Add your first one.</p>{% endif %}
+  </div></div>
+</body>
+</html>
